@@ -24,25 +24,25 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
 - sepgrep: Greps on all local sepolicy files.
 - sgrep:   Greps on all local source files.
 - godir:   Go to the directory containing a file.
-- aokpremote: Add git remote for AOKP Gerrit Review
-- aokpgerrit: A Git wrapper that fetches/pushes patch from/to AOKP Gerrit Review
-- aokprebase: Rebase a Gerrit change and push it again
+- auremote: Add git remote for AU Gerrit Review
+- augerrit: A Git wrapper that fetches/pushes patch from/to AU Gerrit Review
+- aurebase: Rebase a Gerrit change and push it again
 - aospremote: Add git remote for matching AOSP repository
 - cafremote: Add git remote for matching CodeAurora repository.
 - mka:      Builds using SCHED_BATCH on all processors
 - mkap:     Builds the module(s) using mka and pushes them to the device.
 - cmka:     Cleans and builds using mka.
-- pspush:   push commit to AOKP gerrit instance.
+- pspush:   push commit to AU gerrit instance.
 - repolastsync: Prints date and time of last repo sync.
 - reposync: Parallel repo sync using ionice and SCHED_BATCH
 - repopick: Utility to fetch changes from Gerrit.
 - installboot: Installs a boot.img to the connected device.
 - installrecovery: Installs a recovery.img to the connected device.
 - sdkgen:   Create and add a custom sdk platform to your sdk directory from this source tree
-- pyrrit:   Helper subprogram to interact with AOKP gerrit
+- pyrrit:   Helper subprogram to interact with AU gerrit
 - mbot:     Builds for all devices using the psuedo buildbot
 - taco:     Builds for a single device using the pseudo buildbot
-- addaokp:  Add git remote for the AOKP gerrit repository
+- addau:  Add git remote for the AU gerrit repository
 
 Environemnt options:
 - SANITIZE_HOST: Set to 'true' to use ASAN for all host modules. Note that
@@ -90,13 +90,13 @@ function check_product()
         return
     fi
 
-    if (echo -n $1 | grep -q -e "^aokp_") ; then
-       AOKP_DEVICE=$(echo -n $1 | sed -e 's/^aokp_//g')
-       export BUILD_NUMBER=$((date +%s%N ; echo $AOKP_DEVICE; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10)
+    if (echo -n $1 | grep -q -e "^au_") ; then
+       AU_DEVICE=$(echo -n $1 | sed -e 's/^au_//g')
+       export BUILD_NUMBER=$((date +%s%N ; echo $AU_DEVICE; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10)
     else
-       AOKP_DEVICE=
+       AU_DEVICE=
     fi
-    export AOKP_DEVICE
+    export AU_DEVICE
 
         TARGET_PRODUCT=$1 \
         TARGET_BUILD_VARIANT= \
@@ -510,7 +510,7 @@ function print_lunch_menu()
        echo "  (ohai, koush!)"
     fi
     echo
-    if [ "z${AOKP_DEVICES_ONLY}" != "z" ]; then
+    if [ "z${AU_DEVICES_ONLY}" != "z" ]; then
        echo "Breakfast menu... pick a combo:"
     else
        echo "Lunch menu... pick a combo:"
@@ -524,7 +524,7 @@ function print_lunch_menu()
         i=$(($i+1))
     done | column
 
-    if [ "z${AOKP_DEVICES_ONLY}" != "z" ]; then
+    if [ "z${AU_DEVICES_ONLY}" != "z" ]; then
        echo "... and don't forget the bacon!"
     fi
 
@@ -535,7 +535,7 @@ function brunch()
 {
     breakfast $*
     if [ $? -eq 0 ]; then
-        mka rainbowfarts
+        mka goldingot
     else
         echo "No such item in brunch menu. Try 'breakfast'"
         return 1
@@ -547,10 +547,10 @@ function breakfast()
 {
     target=$1
     local variant=$2
-    AOKP_DEVICES_ONLY="true"
+    AU_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
-    for f in `/bin/ls vendor/aokp/vendorsetup.sh 2> /dev/null`
+    for f in `/bin/ls vendor/au/vendorsetup.sh 2> /dev/null`
         do
             echo "including $f"
             . $f
@@ -566,11 +566,11 @@ function breakfast()
             # A buildtype was specified, assume a full device name
             lunch $target
         else
-            # This is probably just the AOKP model name
+            # This is probably just the AU model name
             if [ -z "$variant" ]; then
                 variant="userdebug"
             fi
-            lunch aokp_$target-$variant
+            lunch au_$target-$variant
         fi
     fi
     return $?
@@ -617,11 +617,11 @@ function lunch()
     export TARGET_BUILD_APPS=
 
     local product=$(echo -n $selection | sed -e "s/-.*$//")
-    local device=$(echo -n $product | sed -e "s/.*aokp_//")
+    local device=$(echo -n $product | sed -e "s/.*au_//")
     check_product $product
     if [ $? -ne 0 ]
     then
-        # if we can't find a product, try to grab it off the AOKP github
+        # if we can't find a product, try to grab it off the AU github
         T=$(gettop)
         pushd $T > /dev/null
         build/tools/roomservice.py $device
@@ -733,8 +733,8 @@ function tapas()
 function eat()
 {
     if [ "$OUT" ] ; then
-        MODVERSION=$(get_build_var AOKP_VERSION)
-        ZIPFILE=aokp-$MODVERSION.zip
+        MODVERSION=$(get_build_var AU_VERSION)
+        ZIPFILE=au-$MODVERSION.zip
         ZIPPATH=$OUT/$ZIPFILE
         if [ ! -f $ZIPPATH ] ; then
             echo "Nothing to eat"
@@ -749,7 +749,7 @@ function eat()
             done
             echo "Device Found.."
         fi
-    if (adb shell getprop ro.aokp.device | grep -q "$AOKP_BUILD");
+    if (adb shell getprop ro.au.device | grep -q "$AU_BUILD");
     then
         # if adbd isn't root we can't write to /cache/recovery/
         adb root
@@ -771,7 +771,7 @@ EOF
     fi
     return $?
     else
-        echo "The connected device does not appear to be $AOKP_BUILD, run away!"
+        echo "The connected device does not appear to be $AU_BUILD, run away!"
     fi
 }
 
@@ -1685,13 +1685,13 @@ function godir () {
 function mbot() {
     unset LUNCH_MENU_CHOICES
     croot
-    ./vendor/aokp/bot/deploy.sh
+    ./vendor/au/bot/deploy.sh
 }
 
 function pspush_host() {
     echo ""
-    echo "Host aokp_gerrit"
-    echo "  Hostname gerrit.aokp.co"
+    echo "Host au_gerrit"
+    echo "  Hostname gerrit.au.co"
     echo "  Port 29418"
     echo "  User $1"
 
@@ -1703,27 +1703,27 @@ function pspush_error() {
 }
 
 function pspush_host_create() {
-    echo "Please enter sshusername registered with gerrit.aokp.co."
+    echo "Please enter sshusername registered with gerrit.au.co."
     read sshusername
     pspush_host $sshusername  >> ~/.ssh/config
 }
 
 function pspush() {
     local project
-    project=`git config --get remote.aokp.projectname`
+    project=`git config --get remote.au.projectname`
     revision=`repo info . | grep "Current revision" | awk {'print $3'} | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"`
     if [ -z "$1" ] || [ "$1" = '--help' ]; then
         echo "pspush"
         echo "to use:  pspush \$destination"
         echo "where \$destination: for=review; drafts=draft; heads=push through review to github (you probably can't)."
         echo "example: 'pspush for'"
-        echo "will execute 'git push ssh://\$sshusername@gerrit.aokp.co:29418/$project HEAD:refs/[for][drafts][heads]/$revision'"
+        echo "will execute 'git push ssh://\$sshusername@gerrit.au.co:29418/$project HEAD:refs/[for][drafts][heads]/$revision'"
     else
         check_ssh_config="`grep -A 1 'gerrit$' ~/.ssh/config`"
-        check_ssh_config_2=`echo "$check_ssh_config" | while read line; do grep gerrit.aokp.co; done`
+        check_ssh_config_2=`echo "$check_ssh_config" | while read line; do grep gerrit.au.co; done`
         if [ -n "$check_ssh_config" ]; then
             if [ -n "$check_ssh_config_2" ]; then
-                git push aokp_gerrit:$project HEAD:refs/$1/$revision
+                git push au_gerrit:$project HEAD:refs/$1/$revision
             fi
         elif [ -z "$check_ssh_config_2" ]; then
             echo "Host entry doesn't exist, create now? (pick 1 or 2)"
@@ -1747,62 +1747,62 @@ function taco() {
         breakfast $sauce
         if [ $? -eq 0 ]; then
             croot
-            ./vendor/aokp/bot/build_device.sh aokp_$sauce-userdebug $sauce
+            ./vendor/au/bot/build_device.sh au_$sauce-userdebug $sauce
         else
             echo "No such item in brunch menu. Try 'breakfast'"
         fi
     done
 }
 
-function addaokp() {
+function addau() {
     git remote rm gerrit 2> /dev/null
     if [ ! -d .git ]
     then
         echo "Not a git repository."
         exit -1
     fi
-    REPO=$(cat .git/config  | grep git://github.com/AOKP/ | awk '{ print $NF }' | sed s#git://github.com/##g)
+    REPO=$(cat .git/config  | grep git://github.com/aurumOS/ | awk '{ print $NF }' | sed s#git://github.com/##g)
     if [ -z "$REPO" ]
     then
-        REPO=$(cat .git/config  | grep https://github.com/AOKP/ | awk '{ print $NF }' | sed s#https://github.com/##g)
+        REPO=$(cat .git/config  | grep https://github.com/aurumOS/ | awk '{ print $NF }' | sed s#https://github.com/##g)
         if [ -z "$REPO" ]
         then
           echo Unable to set up the git remote, are you in the root of the repo?
           return 0
         fi
     fi
-    AOKPUSER=`git config --get review.gerrit.aokp.co.username`
-    if [ -z "$AOKPUSER" ]
+    AUUSER=`git config --get review.gerrit.au.co.username`
+    if [ -z "$AUUSER" ]
     then
-        git remote add gerrit ssh://gerrit.aokp.co:29418/$REPO
+        git remote add gerrit ssh://gerrit.au.co:29418/$REPO
     else
-        git remote add gerrit ssh://$AOKPUSER@gerrit.aokp.co:29418/$REPO
+        git remote add gerrit ssh://$AUUSER@gerrit.au.co:29418/$REPO
     fi
     if ( git remote -v | grep -qv gerrit ) then
-        echo "AOKP gerrit $REPO remote created"
+        echo "AU gerrit $REPO remote created"
     else
         echo "Error creating remote"
         exit -1
     fi
 }
 
-function aokpremote()
+function auremote()
 {
     if ! git rev-parse --git-dir &> /dev/null
     then
         echo ".git directory not found. Please run this from the root directory of the Android repository you wish to set up."
         return 1
     fi
-    git remote rm aokpremote 2> /dev/null
+    git remote rm auremote 2> /dev/null
     GERRIT_REMOTE=$(git config --get remote.github.projectname)
-    AOKPUSER=$(git config --get review.gerrit.aokp.co.username)
-    if [ -z "$AOKPUSER" ]
+    AUUSER=$(git config --get review.gerrit.au.co.username)
+    if [ -z "$AUUSER" ]
     then
-        git remote add aokpremote ssh://gerrit.aokp.co/:29418/$GERRIT_REMOTE
+        git remote add auremote ssh://gerrit.au.co/:29418/$GERRIT_REMOTE
     else
-        git remote add aokpremote ssh://$AOKPUSER@gerrit.aokp.co:29418/$GERRIT_REMOTE
+        git remote add auremote ssh://$AUUSER@gerrit.au.co:29418/$GERRIT_REMOTE
     fi
-    echo "Remote 'aokpremote' created"
+    echo "Remote 'auremote' created"
 }
 
 function aospremote()
@@ -1869,7 +1869,7 @@ function installboot()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 > /dev/null
     adb wait-for-online remount
-    if (adb shell getprop ro.aokp.device | grep -q "$AOKP_BUILD");
+    if (adb shell getprop ro.au.device | grep -q "$AU_BUILD");
     then
         adb push $OUT/boot.img /cache/
         for i in $OUT/system/lib/modules/*;
@@ -1880,7 +1880,7 @@ function installboot()
         adb shell chmod 644 /system/lib/modules/*
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $AOKP_BUILD, run away!"
+        echo "The connected device does not appear to be $AU_BUILD, run away!"
     fi
 }
 
@@ -1918,13 +1918,13 @@ function installrecovery()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 >> /dev/null
     adb wait-for-online remount
-    if (adb shell getprop ro.aokp.device | grep -q "$AOKP_BUILD");
+    if (adb shell getprop ro.au.device | grep -q "$AU_BUILD");
     then
         adb push $OUT/recovery.img /cache/
         adb shell dd if=/cache/recovery.img of=$PARTITION
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $AOKP_BUILD, run away!"
+        echo "The connected device does not appear to be $AU_BUILD, run away!"
     fi
 }
 
@@ -1944,13 +1944,13 @@ function makerecipe() {
   if [ "$REPO_REMOTE" = "github" ]
   then
     pwd
-    aokpremote
-    git push aokpremote HEAD:refs/heads/'$1'
+    auremote
+    git push auremote HEAD:refs/heads/'$1'
   fi
   '
 }
 
-function aokpgerrit() {
+function augerrit() {
 
     if [ "$(__detect_shell)" = "zsh" ]; then
         # zsh does not define FUNCNAME, derive from funcstack
@@ -1961,7 +1961,7 @@ function aokpgerrit() {
         $FUNCNAME help
         return 1
     fi
-    local user=`git config --get review.gerrit.aokp.co.username`
+    local user=`git config --get review.gerrit.au.co.username`
     local review=`git config --get remote.github.review`
     local project=`git config --get remote.github.projectname`
     local command=$1
@@ -1997,7 +1997,7 @@ EOF
             case $1 in
                 __cmg_*) echo "For internal use only." ;;
                 changes|for)
-                    if [ "$FUNCNAME" = "aokpgerrit" ]; then
+                    if [ "$FUNCNAME" = "augerrit" ]; then
                         echo "'$FUNCNAME $1' is deprecated."
                     fi
                     ;;
@@ -2090,7 +2090,7 @@ EOF
                 $local_branch:refs/for/$remote_branch || return 1
             ;;
         changes|for)
-            if [ "$FUNCNAME" = "aokpgerrit" ]; then
+            if [ "$FUNCNAME" = "augerrit" ]; then
                 echo >&2 "'$FUNCNAME $command' is deprecated."
             fi
             ;;
@@ -2195,15 +2195,15 @@ function pyrrit
     python2.7 ${T}/build/tools/pyrrit $@
 }
 
-function aokprebase() {
+function aurebase() {
     local repo=$1
     local refs=$2
     local pwd="$(pwd)"
     local dir="$(gettop)/$repo"
 
     if [ -z $repo ] || [ -z $refs ]; then
-        echo "AOKP Gerrit Rebase Usage: "
-        echo "      aokprebase <path to project> <patch IDs on Gerrit>"
+        echo "AU Gerrit Rebase Usage: "
+        echo "      aurebase <path to project> <patch IDs on Gerrit>"
         echo "      The patch IDs appear on the Gerrit commands that are offered."
         echo "      They consist on a series of numbers and slashes, after the text"
         echo "      refs/changes. For example, the ID in the following command is 26/8126/2"
@@ -2224,7 +2224,7 @@ function aokprebase() {
     echo "Bringing it up to date..."
     repo sync .
     echo "Fetching change..."
-    git fetch "http://gerrit.aokp.co/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
+    git fetch "http://gerrit.au.co/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
     if [ "$?" != "0" ]; then
         echo "Error cherry-picking. Not uploading!"
         return
@@ -2307,14 +2307,14 @@ function repolastsync() {
 function reposync() {
     case `uname -s` in
         Darwin)
-            if [[ $AOKP_REPOSYNC_QUIET = true ]]; then
+            if [[ $AU_REPOSYNC_QUIET = true ]]; then
                 repo sync -j 4 "$@" | awk '!/Fetching\ project\ /'
             else
                 repo sync -j 4 "$@"
             fi
             ;;
         *)
-            if [[ $AOKP_REPOSYNC_QUIET = true ]]; then
+            if [[ $AU_REPOSYNC_QUIET = true ]]; then
                 schedtool -B -n 1 -e ionice -n 1 `which repo` sync -j 4 "$@" | awk '!/Fetching\ project\ /'
             else
                 schedtool -B -n 1 -e ionice -n 1 `which repo` sync -j 4 "$@"
@@ -2361,7 +2361,7 @@ function dopush()
         echo "Device Found."
     fi
 
-    if (adb shell getprop ro.aokp.device | grep -q "$AOKP_BUILD") || [ "$FORCE_PUSH" = "true" ];
+    if (adb shell getprop ro.au.device | grep -q "$AU_BUILD") || [ "$FORCE_PUSH" = "true" ];
     then
     # retrieve IP and PORT info if we're using a TCP connection
     TCPIPPORT=$(adb devices | egrep '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+[^0-9]+' \
@@ -2472,7 +2472,7 @@ EOF
     rm -f $OUT/.log
     return 0
     else
-        echo "The connected device does not appear to be $AOKP_BUILD, run away!"
+        echo "The connected device does not appear to be $AU_BUILD, run away!"
     fi
 }
 
@@ -2489,7 +2489,7 @@ function repopick() {
 function fixup_common_out_dir() {
     common_out_dir=$(get_build_var OUT_DIR)/target/common
     target_device=$(get_build_var TARGET_DEVICE)
-    if [ ! -z $AOKP_FIXUP_COMMON_OUT ]; then
+    if [ ! -z $AU_FIXUP_COMMON_OUT ]; then
         if [ -d ${common_out_dir} ] && [ ! -L ${common_out_dir} ]; then
             mv ${common_out_dir} ${common_out_dir}-${target_device}
             ln -s ${common_out_dir}-${target_device} ${common_out_dir}
@@ -2630,7 +2630,7 @@ unset f
 
 # Add completions
 check_bash_version && {
-    dirs="sdk/bash_completion vendor/aokp/bash_completion"
+    dirs="sdk/bash_completion vendor/au/bash_completion"
     for dir in $dirs; do
     if [ -d ${dir} ]; then
         for f in `/bin/ls ${dir}/[a-z]*.bash 2> /dev/null`; do

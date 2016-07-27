@@ -1,6 +1,6 @@
-__author__ = 'arnav'
+__author__ = 'vishal'
 
-g_url = "gerrit.aokp.co"
+g_url = "gerrit.aurum.cf"
 g_port = 29418
 
-g_proj_basedir = "AOKP/"
+g_proj_basedir = "aurumOS/"

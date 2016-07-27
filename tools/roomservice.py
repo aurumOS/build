@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Copyright (C) 2012-16, The CyanogenMod Project
-# Copyright (C) 2016, AOKP
+# Copyright (C) 2016, aurumOS
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -130,11 +130,11 @@ def add_to_local_manifest(path, name, remote, branch=None):
             branch = "cm-13.0"
         if not (name.find("CyanogenMod/") == 0):
             name = "CyanogenMod/" + name
-    if (remote == "aokp"):
+    if (remote == "au"):
         if (branch == None):
-            branch = "mm"
-        if not (name.find("AOKP/") == 0):
-            name = "AOKP/" + name
+            branch = "au-1.0"
+        if not (name.find("aurumOS/") == 0):
+            name = "aurumOS/" + name
 
     if is_path_in_manifest(path, name, remote, branch):
         # Error messages are present in the called function, so just exit
@@ -151,7 +151,7 @@ def add_to_local_manifest(path, name, remote, branch=None):
 
 
 def get_from_github(device):
-        print("Going to fetch %s from AOKP github" % device)
+        print("Going to fetch %s from aurumOS github" % device)
         try:
             authtuple = netrc.netrc().authenticators("api.github.com")
 
@@ -163,7 +163,7 @@ def get_from_github(device):
         except:
             githubauth = None
 
-        githubreq = urllib.request.Request("https://api.github.com/search/repositories?q=%s+user:AOKP+in:name+fork:true" % device)
+        githubreq = urllib.request.Request("https://api.github.com/search/repositories?q=%s+user:aurumOS+in:name+fork:true" % device)
         if githubauth:
             githubreq.add_header("Authorization","Basic %s" % githubauth)
 
@@ -180,14 +180,14 @@ def get_from_github(device):
             if (res['name'].startswith("device_") and res['name'].endswith("_%s" % device)):
                 print("Found %s" % res['name'])
                 devicepath = res['name'].replace("_","/")
-                if add_to_local_manifest(devicepath, res['full_name'], "aokp"):
+                if add_to_local_manifest(devicepath, res['full_name'], "au"):
                     reposync(res['full_name'])
                 break
 
 def checkdeps(repo_path):
     cmdeps = glob.glob(repo_path + "/cm.dependencies")
-    aokpdeps = glob.glob(repo_path + "/aokp.dependencies")
-    if ((len(cmdeps) + len(aokpdeps)) < 1):
+    audeps = glob.glob(repo_path + "/au.dependencies")
+    if ((len(cmdeps) + len(audeps)) < 1):
         ran_checkdeps_on.append("NO_DEPS:\t\t" + repo_path)
         return
     else:
@@ -210,12 +210,12 @@ def checkdeps(repo_path):
                 checkdeps(dep['target_path'])
 
 
-        if (len(aokpdeps) > 0):
-            ran_checkdeps_on.append("HAS_AOKP_DEPS:\t" + repo_path)
-            aokpdeps = aokpdeps[0]
-            aokpdeps = open(aokpdeps, 'r')
-            aokpdeps = json.loads(aokpdeps.read())
-            for dep in aokpdeps:
+        if (len(audeps) > 0):
+            ran_checkdeps_on.append("HAS_AU_DEPS:\t" + repo_path)
+            audeps = audeps[0]
+            audeps = open(audeps, 'r')
+            audeps = json.loads(audeps.read())
+            for dep in audeps:
                 try:
                     branch = dep['branch']
                 except:
@@ -223,7 +223,7 @@ def checkdeps(repo_path):
                 try:
                     remote = dep['remote']
                 except:
-                    remote = "aokp"
+                    remote = "au"
                 if add_to_local_manifest(dep['target_path'], dep['repository'], remote, branch):
                     reposync(dep['target_path'])
                 checkdeps(dep['target_path'])

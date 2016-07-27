@@ -633,23 +633,25 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   system_progress = 0.75
 
   script.Print("******************************************");
-  script.Print("*    ______  _____   __  __   _____      *");
-  script.Print("*   /\\  _  \\/\\  __`\\/\\ \\/\\ \\ /\\  _ `\\    *");
-  script.Print("*   \\ \\ \\L\\ \\ \\ \\/\\ \\ \\ \\/'/'\\ \\ \\L\\ \\   *");
-  script.Print("*    \\ \\  __ \\ \\ \\ \\ \\ \\ , <  \\ \\ ,__/   *");
-  script.Print("*     \\ \\ \\/\\ \\ \\ \\_\\ \\ \\ \\\\\\`\\ \\ \\ \\/    *");
-  script.Print("*      \\ \\_\\ \\_\\ \\_____\\ \\_\\ \\_\\\\\\ \\_\\    *");
-  script.Print("*       \\/_/\\/_/\\/_____/\\/_/\\/_/ \\/_/    *");
-  script.Print("*                                        *");
-  script.Print("*                         http://aokp.co *");
+  script.Print("AAAAAAAAAAAAAAAAAAAAAA  AAA           AAA");
+  script.Print("AAAA               AAA  AAA           AAA");
+  script.Print("AAAA               AAA  AAA           AAA");
+  script.Print("AAAA               AAA  AAA           AAA");
+  script.Print("AAAA               AAA  AAA           AAA");
+  script.Print("AAAA               AAA  AAA           AAA");
+  script.Print("AAAAAAAAAAAAAAAAAAAAAA  AAA           AAA");
+  script.Print("AAAA               AAA  AAA           AAA");
+  script.Print("AAAA               AAA  AAA           AAA");
+  script.Print("AAAA               AAA  AAA           AAA");
+  script.Print("AAAA               AAA  AAAAAAAAAAAAAAAAA");
   script.Print("******************************************");
-
-  aokpv = GetBuildProp("ro.aokp.version", OPTIONS.info_dict)
-  if os.getenv("AOKP_BUILD") is not None:
-    build = ' '.join(aokpv.split('_')[3].split('-')).title()
+  
+ auv = GetBuildProp("ro.au.version", OPTIONS.info_dict)
+  if os.getenv("AU_BUILD") is not None:
+    build = ' '.join(auv.split('_')[3].split('-')).title()
     script.Print("*   Version: %s"%(build));
-  elif os.getenv("AOKP_BUILDTYPE") is not None:
-    build = ' '.join(aokpv.split('_')[2:]).title()
+  elif os.getenv("AU_BUILDTYPE") is not None:
+    build = ' '.join(auv.split('_')[2:]).title()
     script.Print("*   Version: %s"%(build));
   else:
     build = GetBuildProp("ro.build.date", OPTIONS.info_dict)
@@ -658,7 +660,7 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     script.Print("******************************************");
     script.Print("*   Compiled: %s"%(build));
 
-  device = GetBuildProp("ro.aokp.device", OPTIONS.info_dict)
+  device = GetBuildProp("ro.au.device", OPTIONS.info_dict)
   if GetBuildProp("ro.product.model", OPTIONS.info_dict) is not None:
       model = GetBuildProp("ro.product.model", OPTIONS.info_dict)
       script.Print("*   Device: %s (%s)"%(model, device));

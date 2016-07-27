@@ -2,9 +2,9 @@
 
 SDK_VER=23
 CUSTOM_VER=123
-CUSTOM_NAME=aokp
+CUSTOM_NAME=au
 
-. ${ANDROID_BUILD_TOP}/vendor/aokp/tools/colors
+. ${ANDROID_BUILD_TOP}/vendor/au/tools/colors
 
 if [ -z "$OUT" ]; then
     echo -e $CL_RED"Please lunch a product before using this command"$CL_RST
@@ -56,9 +56,9 @@ cp -rf ${ANDROID_HOME}/platforms/android-${SDK_VER} ${ANDROID_HOME}/platforms/an
 rm -f ${ANDROID_HOME}/platforms/android-${SDK_VER}-${CUSTOM_NAME}/android.jar
 cp -f ${OUTDIR}/android.jar ${ANDROID_HOME}/platforms/android-${SDK_VER}-${CUSTOM_NAME}/android.jar
 sed -i 's/^ro\.build\.version\.sdk=.*/ro.build.version.sdk=123/g' ${ANDROID_HOME}/platforms/android-${SDK_VER}-${CUSTOM_NAME}/build.prop
-sed -i 's/^ro\.build\.version\.release=.*/ro.build.version.release=6.0.1-aokp/g' ${ANDROID_HOME}/platforms/android-${SDK_VER}-${CUSTOM_NAME}/build.prop
+sed -i 's/^ro\.build\.version\.release=.*/ro.build.version.release=6.0.1-au/g' ${ANDROID_HOME}/platforms/android-${SDK_VER}-${CUSTOM_NAME}/build.prop
 sed -i 's/AndroidVersion.ApiLevel=23/AndroidVersion.ApiLevel=123/' ${ANDROID_HOME}/platforms/android-${SDK_VER}-${CUSTOM_NAME}/source.properties
-sed -i 's/Pkg.Desc=/Pkg.Desc=AOKP /' ${ANDROID_HOME}/platforms/android-${SDK_VER}-${CUSTOM_NAME}/source.properties
+sed -i 's/Pkg.Desc=/Pkg.Desc=AU /' ${ANDROID_HOME}/platforms/android-${SDK_VER}-${CUSTOM_NAME}/source.properties
 
 if [ -f ${ANDROID_HOME}/platforms/android-${SDK_VER}-${CUSTOM_NAME}/android.jar ]; then
     echo -e $CL_CYN"New SDK platform with custom android.jar created inside ${ANDROID_HOME}"$CL_RST
