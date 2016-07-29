@@ -133,8 +133,8 @@ def add_to_local_manifest(path, name, remote, branch=None):
     if (remote == "au"):
         if (branch == None):
             branch = "au-1.0"
-        if not (name.find("aurumOS/") == 0):
-            name = "aurumOS/" + name
+        if not (name.find("auOSP/") == 0):
+            name = "auOSP/" + name
 
     if is_path_in_manifest(path, name, remote, branch):
         # Error messages are present in the called function, so just exit
@@ -151,7 +151,7 @@ def add_to_local_manifest(path, name, remote, branch=None):
 
 
 def get_from_github(device):
-        print("Going to fetch %s from aurumOS github" % device)
+        print("Going to fetch %s from aurumOS-devices github" % device)
         try:
             authtuple = netrc.netrc().authenticators("api.github.com")
 
@@ -163,7 +163,7 @@ def get_from_github(device):
         except:
             githubauth = None
 
-        githubreq = urllib.request.Request("https://api.github.com/search/repositories?q=%s+user:aurumOS+in:name+fork:true" % device)
+        githubreq = urllib.request.Request("https://api.github.com/search/repositories?q=%s+user:auOSP+in:name+fork:true" % device)
         if githubauth:
             githubreq.add_header("Authorization","Basic %s" % githubauth)
 

@@ -645,30 +645,8 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("AAAA               AAA  AAA           AAA");
   script.Print("AAAA               AAA  AAAAAAAAAAAAAAAAA");
   script.Print("******************************************");
-  
- auv = GetBuildProp("ro.au.version", OPTIONS.info_dict)
-  if os.getenv("AU_BUILD") is not None:
-    build = ' '.join(auv.split('_')[3].split('-')).title()
-    script.Print("*   Version: %s"%(build));
-  elif os.getenv("AU_BUILDTYPE") is not None:
-    build = ' '.join(auv.split('_')[2:]).title()
-    script.Print("*   Version: %s"%(build));
-  else:
-    build = GetBuildProp("ro.build.date", OPTIONS.info_dict)
-    script.Print("******************************************");
-    script.Print("************ UNOFFICIAL BUILD ************");
-    script.Print("******************************************");
-    script.Print("*   Compiled: %s"%(build));
-
-  device = GetBuildProp("ro.au.device", OPTIONS.info_dict)
-  if GetBuildProp("ro.product.model", OPTIONS.info_dict) is not None:
-      model = GetBuildProp("ro.product.model", OPTIONS.info_dict)
-      script.Print("*   Device: %s (%s)"%(model, device));
-      script.Print("******************************************");
-  else:
-      script.Print("*   Device: %s "%(device));
-      script.Print("******************************************");
-
+  script.Print("******************************************");
+  script.Print("******************************************");
 
   if OPTIONS.wipe_user_data:
     system_progress -= 0.1
